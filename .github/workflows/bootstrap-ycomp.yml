@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - bootstrap_source.b64
+      - bootstrap_source.b64.*
+      - bootstrap_manifest.txt
       - .github/workflows/bootstrap-ycomp.yml
   workflow_dispatch:
 
@@ -22,8 +23,8 @@ jobs:
           fetch-depth: 0
       - name: Expand source archive
         run: |
-          if [ ! -f bootstrap_source.b64 ]; then
-            echo "No archive yet"
+          if [ ! -f bootstrap_manifest.txt ]; then
+            echo "No manifest yet"
             exit 0
           fi
           python3 - <<'PY'
@@ -32,14 +33,25 @@ jobs:
           import tarfile
 
           root = pathlib.Path('.')
-          archive_text = pathlib.Path('bootstrap_source.b64').read_text(encoding='utf-8')
+          expected = int(pathlib.Path('bootstrap_manifest.txt').read_text(encoding='utf-8').strip())
+          chunks = []
+          for index in range(expected):
+              part = pathlib.Path(f'bootstrap_source.b64.{index:03d}')
+              if not part.exists():
+                  print(f'Missing {part}; waiting for all chunks')
+                  raise SystemExit(0)
+              chunks.append(part.read_text(encoding='utf-8').strip())
+
+          archive_text = ''.join(chunks)
           archive_path = pathlib.Path('/tmp/ycomp_source.tar.xz')
           archive_path.write_bytes(base64.b64decode(archive_text))
 
           with tarfile.open(archive_path, 'r:xz') as archive:
               archive.extractall(root)
 
-          pathlib.Path('bootstrap_source.b64').unlink(missing_ok=True)
+          pathlib.Path('bootstrap_manifest.txt').unlink(missing_ok=True)
+          for part in pathlib.Path('.').glob('bootstrap_source.b64.*'):
+              part.unlink(missing_ok=True)
           pathlib.Path('.github/workflows/bootstrap-ycomp.yml').unlink(missing_ok=True)
           PY
       - name: Commit expanded source
