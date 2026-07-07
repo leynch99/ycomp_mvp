@@ -15,7 +15,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
 
   return (
     <>
-      <SiteHeader active={product.categorySlug} />
+      <SiteHeader active={product.categorySlug} mobileActive="catalog" />
       <main>
         <div className="wrap">
           <Breadcrumbs
@@ -129,7 +129,7 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
                   <b>BUILD // 03</b>
                   Собрать ПК с этим товаром и сохранить спецификацию.
                 </div>
-                <Link className="btn btn-quiet" href="/compare">
+                <Link className="btn btn-quiet" href="/configurator">
                   Открыть
                 </Link>
               </div>
@@ -236,6 +236,18 @@ export default function ProductPage({ params }: { params: { slug: string } }) {
           </section>
         </div>
       </main>
+      <div className="mobile-buy-bar">
+        <div className="price-block">
+          <div className="price">{formatPrice(product.price)}</div>
+          {product.oldPrice ? <div className="old">{formatPrice(product.oldPrice)}</div> : null}
+        </div>
+        <button className="btn btn-outline" type="button" aria-label="Добавить в избранное">
+          ♡
+        </button>
+        <Link className="btn btn-primary" href="/cart">
+          В корзину
+        </Link>
+      </div>
       <SiteFooter />
     </>
   );

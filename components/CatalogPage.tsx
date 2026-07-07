@@ -20,7 +20,7 @@ export function CatalogPage({ categorySlug = "all" }: { categorySlug?: string })
 
   return (
     <>
-      <SiteHeader active={isAll ? "videocards" : category.slug} />
+      <SiteHeader active={isAll ? "videocards" : category.slug} mobileActive="catalog" />
       <main>
         <div className="wrap">
           <Breadcrumbs

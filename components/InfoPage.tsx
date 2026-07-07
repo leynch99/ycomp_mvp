@@ -1,15 +1,18 @@
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { InfoSidebar } from "@/components/InfoSidebar";
 
 export function InfoPage({
   title,
   subtitle,
   rows,
-  body
+  body,
+  active
 }: {
   title: string;
   subtitle: string;
+  active: string;
   rows: Array<[string, string]>;
   body: string[];
 }) {
@@ -28,7 +31,8 @@ export function InfoPage({
           </div>
         </section>
         <div className="wrap info-layout">
-          <div className="info-content">
+          <InfoSidebar active={active} />
+          <article className="info-content">
             {body.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
@@ -40,15 +44,7 @@ export function InfoPage({
                 </li>
               ))}
             </ul>
-          </div>
-          <aside className="info-card">
-            <div className="mono-label">contact // support</div>
-            <h2>Нужна помощь?</h2>
-            <p className="muted">Менеджер проверит наличие, совместимость и условия доставки по вашему городу.</p>
-            <a className="btn btn-primary" href="tel:+380443907878">
-              Заказать звонок
-            </a>
-          </aside>
+          </article>
         </div>
       </main>
       <SiteFooter />

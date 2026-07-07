@@ -22,10 +22,10 @@ const footerGroups = [
   {
     title: "Сервисы",
     links: [
-      ["Конфигуратор", "/compare"],
+      ["Конфигуратор", "/configurator"],
+      ["Trade-In", "/trade-in"],
       ["Сравнение", "/compare"],
-      ["Избранное", "/favorites"],
-      ["Блог", "/blog"]
+      ["Избранное", "/favorites"]
     ]
   },
   {

@@ -217,7 +217,7 @@ export function AccountPage({ section }: { section?: string }) {
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader mobileActive="account" />
       <main>
         <div className="wrap">
           <Breadcrumbs items={[{ label: "Главная", href: "/" }, { label: sectionTitle }]} />

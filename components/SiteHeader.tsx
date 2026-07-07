@@ -1,7 +1,13 @@
 import Link from "next/link";
 import { categories } from "@/lib/data";
 
-export function SiteHeader({ active = "videocards" }: { active?: string }) {
+export function SiteHeader({
+  active = "videocards",
+  mobileActive
+}: {
+  active?: string;
+  mobileActive?: "home" | "catalog" | "favorites" | "cart" | "account";
+}) {
   return (
     <>
       <div className="utility-bar">
@@ -70,6 +76,23 @@ export function SiteHeader({ active = "videocards" }: { active?: string }) {
             ))}
           </div>
         </div>
+      </nav>
+
+      <nav className="mobile-bottom-nav" aria-label="Мобильная навигация">
+        {[
+          ["home", "/", "⌂", "Главная"],
+          ["catalog", "/catalog", "☰", "Каталог"],
+          ["favorites", "/favorites", "♡", "Избранное"],
+          ["cart", "/cart", "▤", "Корзина"],
+          ["account", "/account", "◎", "Кабинет"]
+        ].map(([key, href, icon, label]) => (
+          <Link className={`mobile-nav-item${mobileActive === key ? " active" : ""}`} href={href} key={key}>
+            <span className="ic">{icon}</span>
+            <span>{label}</span>
+            {key === "favorites" ? <span className="mini-count">7</span> : null}
+            {key === "cart" ? <span className="mini-count">2</span> : null}
+          </Link>
+        ))}
       </nav>
     </>
   );

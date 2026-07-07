@@ -3,6 +3,15 @@ import { formatPrice, products } from "@/lib/data";
 
 const cartProducts = [products[0], products[1], products[2]];
 
+function getOrderTotals(mode: "cart" | "checkout") {
+  const subtotal = cartProducts.reduce((sum, item, index) => sum + item.price * (index === 1 ? 2 : 1), 0);
+  const discount = 3810;
+  const bonus = mode === "checkout" ? 1200 : 0;
+  const total = subtotal - discount - bonus;
+
+  return { subtotal, discount, bonus, total };
+}
+
 function Stepper({ mode }: { mode: "cart" | "checkout" }) {
   return (
     <div className="stepper">
@@ -25,10 +34,7 @@ function Stepper({ mode }: { mode: "cart" | "checkout" }) {
 }
 
 function SummaryBox({ mode }: { mode: "cart" | "checkout" }) {
-  const subtotal = cartProducts.reduce((sum, item, index) => sum + item.price * (index === 1 ? 2 : 1), 0);
-  const discount = 3810;
-  const bonus = mode === "checkout" ? 1200 : 0;
-  const total = subtotal - discount - bonus;
+  const { subtotal, discount, bonus, total } = getOrderTotals(mode);
 
   return (
     <aside className="summary-box">
@@ -67,6 +73,32 @@ function SummaryBox({ mode }: { mode: "cart" | "checkout" }) {
         ))}
       </div>
     </aside>
+  );
+}
+
+function MobileSummaryBar({ mode }: { mode: "cart" | "checkout" }) {
+  const { subtotal, discount, bonus, total } = getOrderTotals(mode);
+
+  return (
+    <div className="mobile-summary-bar">
+      <div className="mobile-summary-lines">
+        <div>
+          <span>Товары</span>
+          <b>{formatPrice(subtotal)}</b>
+        </div>
+        <div>
+          <span>Скидка</span>
+          <b className="sale-val">-{formatPrice(discount + bonus)}</b>
+        </div>
+      </div>
+      <div className="mobile-summary-total">
+        <span>К оплате</span>
+        <b>{formatPrice(total)}</b>
+      </div>
+      <Link className="btn btn-primary" href={mode === "cart" ? "/checkout" : "/account/orders"}>
+        {mode === "cart" ? "Оформить заказ" : "Подтвердить заказ"}
+      </Link>
+    </div>
   );
 }
 
@@ -220,6 +252,7 @@ export function CheckoutShell({ mode }: { mode: "cart" | "checkout" }) {
           <SummaryBox mode={mode} />
         </div>
       </main>
+      <MobileSummaryBar mode={mode} />
     </>
   );
 }

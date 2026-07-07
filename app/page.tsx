@@ -11,7 +11,7 @@ const quickActions = [
     tag: "// CONFIG",
     title: "Конфигуратор ПК",
     text: "Соберите корзину по шагам и сохраните сборку в кабинете.",
-    href: "/compare"
+    href: "/configurator"
   },
   {
     tag: "// FAST PICK",
@@ -46,7 +46,7 @@ export default function HomePage() {
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader mobileActive="home" />
       <main>
         <section className="hero">
           <div className="wrap">
@@ -103,7 +103,7 @@ export default function HomePage() {
         <section className="page-section">
           <div className="wrap">
             <SectionHead index="02 /" title="Категории" href="/catalog" />
-            <div className="cat-grid">
+            <div className="cat-grid mobile-cat-strip">
               {categories.map((category) => (
                 <Link className="cat-tile" href={`/catalog/${category.slug}`} key={category.slug}>
                   <div className="cat-icon">{category.icon}</div>
@@ -129,7 +129,7 @@ export default function HomePage() {
                 <span className="tab">Рекомендуем</span>
               </div>
             </div>
-            <div className="product-grid">
+            <div className="product-grid mobile-product-strip">
               {featuredProducts.map((product) => (
                 <ProductCard product={product} key={product.slug} />
               ))}

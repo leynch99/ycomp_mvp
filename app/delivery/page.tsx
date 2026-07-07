@@ -1,6 +1,5 @@
-import { InfoPage } from "@/components/InfoPage";
-import { infoPages } from "@/lib/data";
+import { DeliveryInfoPage } from "@/components/DeliveryInfoPage";
 
 export default function DeliveryPage() {
-  return <InfoPage {...infoPages.delivery} />;
+  return <DeliveryInfoPage />;
 }

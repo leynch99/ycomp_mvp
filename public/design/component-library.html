@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YComp — Библиотека компонентов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#12151A; --surface:#191E25; --surface-2:#20262F; --border:#2A313C;
+    --text:#ECEEF1; --text-muted:#8C94A3; --accent:#FF6A2B; --green:#35D28A; --sale:#FF4667; --blue:#4C9EFF;
+    --font-display:'Oswald',sans-serif; --font-body:'Inter',sans-serif; --font-mono:'JetBrains Mono',monospace;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--text); font-family:var(--font-body); line-height:1.5;}
+  a{color:inherit; text-decoration:none;}
+  ul{list-style:none;}
+  .wrap{max-width:1320px; margin:0 auto; padding:60px 24px 100px;}
+
+  .lib-header{margin-bottom:50px; border-bottom:1px solid var(--border); padding-bottom:30px;}
+  .lib-header .eyebrow{font-family:var(--font-mono); font-size:11px; color:var(--accent); letter-spacing:1.5px; text-transform:uppercase; margin-bottom:12px;}
+  .lib-header h1{font-family:var(--font-display); font-size:38px; text-transform:uppercase;}
+  .lib-header p{font-size:14px; color:var(--text-muted); margin-top:10px; max-width:600px;}
+
+  .section{margin-bottom:56px;}
+  .section-title{font-family:var(--font-display); font-size:22px; text-transform:uppercase; margin-bottom:6px; display:flex; align-items:center; gap:12px;}
+  .section-title .idx{font-family:var(--font-mono); font-size:14px; color:var(--accent);}
+  .section-note{font-size:12.5px; color:var(--text-muted); margin-bottom:22px; max-width:640px;}
+
+  .demo-box{background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:26px; display:flex; flex-wrap:wrap; gap:16px; align-items:center;}
+  .demo-box.col{flex-direction:column; align-items:stretch;}
+  .demo-label{font-family:var(--font-mono); font-size:10px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; width:100%; margin-bottom:-4px;}
+
+  /* ===== tokens ===== */
+  .token-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
+  .token-swatch{border:1px solid var(--border); border-radius:3px; overflow:hidden;}
+  .token-swatch .color{height:60px;}
+  .token-swatch .meta{padding:10px 12px; background:var(--surface);}
+  .token-swatch .meta b{font-family:var(--font-mono); font-size:11px; display:block;}
+  .token-swatch .meta span{font-family:var(--font-mono); font-size:10px; color:var(--text-muted);}
+
+  .type-row{display:flex; align-items:baseline; gap:20px; padding:16px 0; border-bottom:1px solid var(--border);}
+  .type-row:last-child{border-bottom:none;}
+  .type-row .tag{font-family:var(--font-mono); font-size:10px; color:var(--text-muted); width:160px; flex-shrink:0;}
+
+  /* ===== buttons ===== */
+  .btn{font-family:var(--font-body); font-weight:600; font-size:14px; padding:14px 24px; border-radius:2px; cursor:pointer; border:1px solid transparent; display:inline-flex; align-items:center; gap:8px;}
+  .btn-primary{background:var(--accent); color:#12151A;}
+  .btn-outline{border-color:var(--border); color:var(--text); background:transparent;}
+  .btn-outline:hover{border-color:var(--accent); color:var(--accent);}
+  .btn-danger{border-color:var(--border); color:var(--sale); background:transparent;}
+  .btn:disabled{opacity:0.4; cursor:not-allowed;}
+  .btn-sm{padding:9px 16px; font-size:12.5px;}
+  .icon-square-btn{width:38px; height:38px; border-radius:2px; border:1px solid var(--border); background:var(--surface-2); color:var(--text); display:flex; align-items:center; justify-content:center; cursor:pointer;}
+
+  /* ===== chips / badges / pills ===== */
+  .chip{font-family:var(--font-mono); font-size:10px; padding:2px 7px; border:1px solid var(--border); border-radius:2px; color:var(--text-muted);}
+  .chip.ok{border-color:var(--green); color:var(--green);}
+  .chip.warn{border-color:var(--sale); color:var(--sale);}
+  .p-badge{font-family:var(--font-mono); font-size:10px; padding:3px 8px; border-radius:2px; font-weight:600;}
+  .b-new{background:var(--green); color:#0D0F13;}
+  .b-sale{background:var(--sale); color:#fff;}
+  .b-oos{background:var(--surface-2); color:var(--text-muted); border:1px solid var(--border);}
+  .status-pill{font-family:var(--font-mono); font-size:10.5px; padding:4px 10px; border-radius:20px; display:inline-block;}
+  .st-new{background:rgba(76,158,255,0.14); color:var(--blue);}
+  .st-processing{background:var(--surface-2); color:var(--text-muted);}
+  .st-shipped{background:rgba(255,106,43,0.14); color:var(--accent);}
+  .st-delivered{background:rgba(53,210,138,0.14); color:var(--green);}
+  .cat-chip{font-family:var(--font-mono); font-size:12px; padding:8px 16px; border:1px solid var(--border); border-radius:20px; color:var(--text-muted); cursor:pointer;}
+  .cat-chip.active{background:var(--accent); color:#12151A; border-color:var(--accent); font-weight:600;}
+
+  /* ===== form controls ===== */
+  .field{max-width:280px;}
+  .field label{display:block; font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.8px; color:var(--text-muted); margin-bottom:8px;}
+  .field input, .field select{
+    width:100%; background:var(--surface-2); border:1px solid var(--border); color:var(--text);
+    padding:0 14px; height:46px; border-radius:2px; outline:none; font-family:var(--font-body); font-size:13.5px;
+  }
+  .field input:focus{border-color:var(--accent);}
+  .checkbox-row{display:flex; align-items:center; gap:9px; color:var(--text-muted); font-size:13px;}
+  .checkbox-row .box{width:16px; height:16px; border:1px solid var(--border); border-radius:2px;}
+  .checkbox-row.checked .box{background:var(--accent); border-color:var(--accent);}
+  .checkbox-row.checked{color:var(--text);}
+  .radio-row{display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-muted);}
+  .radio{width:16px; height:16px; border-radius:50%; border:1px solid var(--border); position:relative;}
+  .radio-row.checked .radio{border-color:var(--accent);}
+  .radio-row.checked .radio::after{content:''; position:absolute; inset:3px; background:var(--accent); border-radius:50%;}
+  .toggle{width:40px; height:22px; border-radius:12px; position:relative; cursor:pointer;}
+  .toggle.on{background:var(--accent);}
+  .toggle.on::after{content:''; position:absolute; top:2px; right:2px; width:18px; height:18px; background:#12151A; border-radius:50%;}
+  .toggle.off{background:var(--border);}
+  .toggle.off::after{content:''; position:absolute; top:2px; left:2px; width:18px; height:18px; background:#0D0F13; border-radius:50%;}
+
+  /* ===== ticket (signature component) ===== */
+  .ticket{background:var(--surface); border:1px solid var(--border); border-radius:3px; max-width:320px;}
+  .ticket-top{padding:16px 16px 0; display:flex; justify-content:space-between;}
+  .ticket-code{font-family:var(--font-mono); font-size:10px; color:var(--text-muted);}
+  .ticket-tag{font-family:var(--font-mono); font-size:10px; padding:3px 8px; background:rgba(53,210,138,0.12); color:var(--green); border-radius:2px;}
+  .ticket-photo{padding:14px 20px;}
+  .ticket-photo div{height:100px; background:var(--surface-2); border-radius:2px;}
+  .ticket-perforation{height:1px; border-top:1px dashed var(--border); margin:0 16px;}
+  .ticket-specs{padding:14px 16px 16px; font-family:var(--font-mono); font-size:12px;}
+  .spec-row{display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dotted var(--border); color:var(--text-muted);}
+  .spec-row b{color:var(--text); font-weight:500;}
+  .ticket-price{display:flex; justify-content:space-between; align-items:center; padding-top:14px;}
+  .ticket-price .price{font-family:var(--font-display); font-size:22px;}
+
+  /* ===== stat card ===== */
+  .stat-card{background:var(--surface); border:1px solid var(--border); border-radius:3px; padding:20px; min-width:180px;}
+  .stat-card .k{font-family:var(--font-mono); font-size:10.5px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:10px;}
+  .stat-card .v{font-family:var(--font-display); font-size:26px;}
+  .stat-card .v span{font-family:var(--font-mono); font-size:12px; color:var(--green); margin-left:8px;}
+
+  /* ===== tabs ===== */
+  .tabs-nav{display:flex; gap:30px; border-bottom:1px solid var(--border);}
+  .tab-item{padding:14px 0; font-size:13.5px; color:var(--text-muted); cursor:pointer; border-bottom:2px solid transparent;}
+  .tab-item.active{color:var(--text); border-color:var(--accent); font-weight:600;}
+  .tab-pill{font-family:var(--font-mono); font-size:11.5px; padding:7px 14px; border-radius:20px; color:var(--text-muted); cursor:pointer;}
+  .tab-pill.active{background:var(--surface-2); color:var(--text); font-weight:600;}
+
+  /* ===== filter row ===== */
+  .filter-row{display:flex; align-items:center; justify-content:space-between; padding:8px 0; font-size:13px; color:var(--text-muted); max-width:260px;}
+  .filter-row .fchk{width:14px; height:14px; border:1px solid var(--border); border-radius:2px; flex-shrink:0; margin-right:10px;}
+  .filter-row .flabel{display:flex; align-items:center;}
+  .filter-row.checked .fchk{background:var(--accent); border-color:var(--accent);}
+  .filter-row.checked{color:var(--text);}
+  .fcount{font-family:var(--font-mono); font-size:11px; color:var(--text-muted);}
+
+  /* ===== pagination ===== */
+  .pagination{display:flex; align-items:center; gap:8px;}
+  .page-item{width:36px; height:36px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:2px; font-family:var(--font-mono); font-size:13px; color:var(--text-muted); cursor:pointer;}
+  .page-item.active{background:var(--accent); border-color:var(--accent); color:#12151A; font-weight:600;}
+
+  /* ===== table ===== */
+  .demo-table{width:100%; border-collapse:collapse; font-size:13px;}
+  .demo-table th{text-align:left; font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; color:var(--text-muted); padding:10px 0; border-bottom:1px solid var(--border);}
+  .demo-table td{padding:12px 0; border-bottom:1px solid var(--border); color:var(--text-muted);}
+  .demo-table td:first-child{color:var(--text); font-weight:500;}
+
+  /* ===== callout ===== */
+  .callout{background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent); border-radius:0 3px 3px 0; padding:16px 20px; max-width:500px;}
+  .callout .k{font-family:var(--font-mono); font-size:10.5px; color:var(--accent); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px;}
+
+  /* eyebrow */
+  .eyebrow{font-family:var(--font-mono); font-size:11px; color:var(--accent); letter-spacing:1.5px; text-transform:uppercase; display:flex; align-items:center; gap:10px;}
+  .eyebrow::before{content:''; width:22px; height:1px; background:var(--accent);}
+
+  @media(max-width:900px){
+    .token-grid{grid-template-columns:repeat(2,1fr);}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="lib-header">
+    <div class="eyebrow">Дизайн-система</div>
+    <h1>Библиотека компонентов YComp</h1>
+    <p>Единый визуальный справочник всех UI-элементов из макетов. Используется как источник истины при разработке — не создавайте альтернативные реализации этих компонентов.</p>
+  </div>
+
+  <!-- 01 COLORS -->
+  <div class="section">
+    <div class="section-title"><span class="idx">01</span>Цветовые токены</div>
+    <div class="token-grid">
+      <div class="token-swatch"><div class="color" style="background:#12151A;"></div><div class="meta"><b>--bg</b><span>#12151A</span></div></div>
+      <div class="token-swatch"><div class="color" style="background:#191E25;"></div><div class="meta"><b>--surface</b><span>#191E25</span></div></div>
+      <div class="token-swatch"><div class="color" style="background:#20262F;"></div><div class="meta"><b>--surface-2</b><span>#20262F</span></div></div>
+      <div class="token-swatch"><div class="color" style="background:#2A313C;"></div><div class="meta"><b>--border</b><span>#2A313C</span></div></div>
+      <div class="token-swatch"><div class="color" style="background:#FF6A2B;"></div><div class="meta"><b>--accent</b><span>#FF6A2B</span></div></div>
+      <div class="token-swatch"><div class="color" style="background:#35D28A;"></div><div class="meta"><b>--green</b><span>#35D28A</span></div></div>
+      <div class="token-swatch"><div class="color" style="background:#FF4667;"></div><div class="meta"><b>--sale</b><span>#FF4667</span></div></div>
+      <div class="token-swatch"><div class="color" style="background:#4C9EFF;"></div><div class="meta"><b>--blue (admin)</b><span>#4C9EFF</span></div></div>
+    </div>
+  </div>
+
+  <!-- 02 TYPOGRAPHY -->
+  <div class="section">
+    <div class="section-title"><span class="idx">02</span>Типографика</div>
+    <div class="section-note">Три роли, не смешивать: Display — только заголовки. Body — читаемый текст. Mono — любые данные (цены, SKU, статусы, даты).</div>
+    <div class="demo-box col">
+      <div class="type-row"><div class="tag">Display H1</div><div style="font-family:var(--font-display); font-size:34px; text-transform:uppercase;">Видеокарты</div></div>
+      <div class="type-row"><div class="tag">Display H2</div><div style="font-family:var(--font-display); font-size:22px; text-transform:uppercase;">Собери свой ПК</div></div>
+      <div class="type-row"><div class="tag">Body text</div><div style="font-size:14px; color:var(--text-muted);">Тройной вентилятор и увеличенная площадь радиатора обеспечивают тихую работу под нагрузкой.</div></div>
+      <div class="type-row"><div class="tag">Mono / price</div><div style="font-family:var(--font-mono); font-size:20px;">44 290 ₴</div></div>
+      <div class="type-row"><div class="tag">Mono / SKU</div><div style="font-family:var(--font-mono); font-size:12px; color:var(--text-muted);">SKU: GPU-5070TI-VENTUS3X</div></div>
+      <div class="type-row"><div class="tag">Eyebrow</div><div class="eyebrow">Конфигуратор ПК 2.0</div></div>
+    </div>
+  </div>
+
+  <!-- 03 BUTTONS -->
+  <div class="section">
+    <div class="section-title"><span class="idx">03</span>Кнопки</div>
+    <div class="demo-box">
+      <button class="btn btn-primary">Primary →</button>
+      <button class="btn btn-outline">Outline</button>
+      <button class="btn btn-danger">Danger / удалить</button>
+      <button class="btn btn-primary" disabled>Disabled</button>
+      <button class="btn btn-primary btn-sm">Small</button>
+      <div class="icon-square-btn">＋</div>
+    </div>
+  </div>
+
+  <!-- 04 CHIPS / BADGES / STATUS -->
+  <div class="section">
+    <div class="section-title"><span class="idx">04</span>Чипы, бейджи, статусы</div>
+    <div class="section-note">Chip — атрибут внутри карточки. Badge — статус поверх изображения. Status pill — статус сущности в таблице/кабинете.</div>
+    <div class="demo-box col">
+      <div class="demo-label">Chip (атрибуты)</div>
+      <div style="display:flex; gap:8px;"><span class="chip">AM5</span><span class="chip">DDR5</span><span class="chip ok">✓ хватит с запасом</span><span class="chip warn">⚠ нужно от 750W</span></div>
+      <div class="demo-label">Badge (поверх фото)</div>
+      <div style="display:flex; gap:8px;"><span class="p-badge b-new">Новинка</span><span class="p-badge b-sale">-12%</span><span class="p-badge b-oos">Нет в наличии</span></div>
+      <div class="demo-label">Status pill (заказы/сущности)</div>
+      <div style="display:flex; gap:8px;"><span class="status-pill st-new">Новый</span><span class="status-pill st-processing">В обработке</span><span class="status-pill st-shipped">Отправлен</span><span class="status-pill st-delivered">Доставлен</span></div>
+      <div class="demo-label">Category chip (фильтры/табы)</div>
+      <div style="display:flex; gap:8px;"><span class="cat-chip active">Все (7)</span><span class="cat-chip">Видеокарты (3)</span><span class="cat-chip">SSD (1)</span></div>
+    </div>
+  </div>
+
+  <!-- 05 FORM CONTROLS -->
+  <div class="section">
+    <div class="section-title"><span class="idx">05</span>Формы</div>
+    <div class="demo-box">
+      <div class="field"><label>Email</label><input placeholder="your@email.com"></div>
+      <div class="field"><label>Город</label><select><option>Киев</option></select></div>
+    </div>
+    <div class="demo-box" style="margin-top:14px;">
+      <div class="checkbox-row checked"><div class="box"></div>Отмечен</div>
+      <div class="checkbox-row"><div class="box"></div>Не отмечен</div>
+      <div class="radio-row checked"><div class="radio"></div>Выбрано</div>
+      <div class="radio-row"><div class="radio"></div>Не выбрано</div>
+      <div style="display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-muted);"><div class="toggle on"></div>Toggle on</div>
+      <div style="display:flex; align-items:center; gap:10px; font-size:13px; color:var(--text-muted);"><div class="toggle off"></div>Toggle off</div>
+    </div>
+  </div>
+
+  <!-- 06 SIGNATURE TICKET -->
+  <div class="section">
+    <div class="section-title"><span class="idx">06</span>Сигнатурный компонент — "datasheet ticket"</div>
+    <div class="section-note">Главный узнаваемый паттерн системы. Использовать для товаров, сборок ПК, тарифов — везде, где нужно показать сущность с атрибутами.</div>
+    <div class="demo-box">
+      <div class="ticket">
+        <div class="ticket-top"><div class="ticket-code">SKU // GPU-RTX5070-OC</div><div class="ticket-tag">В наличии</div></div>
+        <div class="ticket-photo"><div></div></div>
+        <div class="ticket-perforation"></div>
+        <div class="ticket-specs">
+          <div class="spec-row"><span>Память</span><b>12 GB GDDR7</b></div>
+          <div class="spec-row"><span>Интерфейс</span><b>PCIe 5.0 x16</b></div>
+          <div class="spec-row"><span>Рек. БП</span><b>от 650 Вт</b></div>
+          <div class="ticket-price"><div class="price">32 990 ₴</div><div class="icon-square-btn">＋</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 STAT CARDS -->
+  <div class="section">
+    <div class="section-title"><span class="idx">07</span>Stat-карточки (кабинет/админка)</div>
+    <div class="demo-box">
+      <div class="stat-card"><div class="k">Выручка</div><div class="v">2 148 300 ₴<span>▲12%</span></div></div>
+      <div class="stat-card"><div class="k">Активные заказы</div><div class="v">2</div></div>
+    </div>
+  </div>
+
+  <!-- 08 TABS -->
+  <div class="section">
+    <div class="section-title"><span class="idx">08</span>Табы</div>
+    <div class="demo-box col">
+      <div class="demo-label">Tabs-nav (страница товара/статьи)</div>
+      <div class="tabs-nav"><div class="tab-item active">Описание</div><div class="tab-item">Характеристики</div><div class="tab-item">Отзывы (61)</div></div>
+      <div class="demo-label" style="margin-top:10px;">Tab-pill (таблицы админки)</div>
+      <div style="display:flex; gap:6px;"><div class="tab-pill active">Все (412)</div><div class="tab-pill">Новые (12)</div><div class="tab-pill">Доставлены (318)</div></div>
+    </div>
+  </div>
+
+  <!-- 09 FILTERS -->
+  <div class="section">
+    <div class="section-title"><span class="idx">09</span>Строка фильтра (sidebar категории)</div>
+    <div class="demo-box col">
+      <div class="filter-row checked"><span class="flabel"><span class="fchk"></span>NVIDIA</span><span class="fcount">842</span></div>
+      <div class="filter-row"><span class="flabel"><span class="fchk"></span>AMD</span><span class="fcount">398</span></div>
+    </div>
+  </div>
+
+  <!-- 10 PAGINATION & TABLE -->
+  <div class="section">
+    <div class="section-title"><span class="idx">10</span>Пагинация и таблицы</div>
+    <div class="demo-box" style="margin-bottom:14px;">
+      <div class="pagination"><div class="page-item">‹</div><div class="page-item active">1</div><div class="page-item">2</div><div class="page-item">3</div><div class="page-item">›</div></div>
+    </div>
+    <div class="demo-box col">
+      <table class="demo-table">
+        <tr><th>Товар</th><th>Цена</th><th>Остаток</th></tr>
+        <tr><td>MSI RTX 5070 Ti Ventus 3X</td><td>44 290 ₴</td><td>14 шт</td></tr>
+        <tr><td>Kingston FURY 32GB DDR5</td><td>4 590 ₴</td><td>3 шт</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- 11 CALLOUT -->
+  <div class="section">
+    <div class="section-title"><span class="idx">11</span>Callout / выделенный блок</div>
+    <div class="demo-box">
+      <div class="callout"><div class="k">Формула</div>Мощность БП = (TDP CPU + TDP GPU + 50 Вт) × 1.3</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
