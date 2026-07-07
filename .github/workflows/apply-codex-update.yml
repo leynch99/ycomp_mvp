@@ -1,0 +1,74 @@
+name: Apply Codex Update
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - codex_update_payload.b64.*
+      - codex_update_manifest.txt
+      - .github/workflows/apply-codex-update.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Apply source archive
+        run: |
+          python3 - <<'PY'
+          import base64
+          import pathlib
+          import shutil
+          import zipfile
+
+          root = pathlib.Path('.')
+          manifest = root / 'codex_update_manifest.txt'
+          if not manifest.exists():
+              print('No Codex update manifest found')
+              raise SystemExit(0)
+
+          expected = int(manifest.read_text(encoding='utf-8').strip())
+          parts = []
+          for index in range(expected):
+              part = root / f'codex_update_payload.b64.{index:03d}'
+              if not part.exists():
+                  print(f'Missing {part}; waiting for all chunks')
+                  raise SystemExit(0)
+              parts.append(part.read_text(encoding='ascii').strip())
+
+          archive = root / '.codex-update.zip'
+          archive.write_bytes(base64.b64decode(''.join(parts)))
+
+          for target in ['app', 'components', 'lib', 'prisma', 'public', 'scripts']:
+              path = root / target
+              if path.exists():
+                  shutil.rmtree(path)
+
+          with zipfile.ZipFile(archive) as zf:
+              zf.extractall(root)
+
+          archive.unlink(missing_ok=True)
+          manifest.unlink(missing_ok=True)
+          for part in root.glob('codex_update_payload.b64.*'):
+              part.unlink(missing_ok=True)
+          pathlib.Path('.github/workflows/apply-codex-update.yml').unlink(missing_ok=True)
+          PY
+      - name: Commit update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Update YComp storefront build"
+          git push
