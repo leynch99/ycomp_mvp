@@ -1,0 +1,9 @@
+node_modules/
+.next/
+.env*
+*.log
+tsconfig.tsbuildinfo
+verify-server.*.log
+dev-server.*.log
+tree-elements*.json
+upload-file-list.txt
