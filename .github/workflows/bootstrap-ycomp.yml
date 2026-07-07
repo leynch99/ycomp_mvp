@@ -29,14 +29,14 @@ jobs:
           python3 - <<'PY'
           import base64
           import pathlib
-          import zipfile
+          import tarfile
 
           root = pathlib.Path('.')
           archive_text = pathlib.Path('bootstrap_source.b64').read_text(encoding='utf-8')
-          archive_path = pathlib.Path('/tmp/ycomp_source.zip')
+          archive_path = pathlib.Path('/tmp/ycomp_source.tar.xz')
           archive_path.write_bytes(base64.b64decode(archive_text))
 
-          with zipfile.ZipFile(archive_path) as archive:
+          with tarfile.open(archive_path, 'r:xz') as archive:
               archive.extractall(root)
 
           pathlib.Path('bootstrap_source.b64').unlink(missing_ok=True)
