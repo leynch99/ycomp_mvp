@@ -1,0 +1,62 @@
+name: Add Package Lock
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - package_lock.b64.*
+      - package_lock_manifest.txt
+      - .github/workflows/add-package-lock.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  unpack:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore package lock
+        run: |
+          if [ ! -f package_lock_manifest.txt ]; then
+            echo "No manifest yet"
+            exit 0
+          fi
+          python3 - <<'PY'
+          import base64
+          import lzma
+          import pathlib
+
+          expected = int(pathlib.Path('package_lock_manifest.txt').read_text(encoding='utf-8').strip())
+          chunks = []
+          for index in range(expected):
+              part = pathlib.Path(f'package_lock.b64.{index:03d}')
+              if not part.exists():
+                  print(f'Missing {part}; waiting for all chunks')
+                  raise SystemExit(0)
+              chunks.append(part.read_text(encoding='utf-8').strip())
+
+          compressed = base64.b64decode(''.join(chunks))
+          pathlib.Path('package-lock.json').write_bytes(lzma.decompress(compressed))
+
+          pathlib.Path('package_lock_manifest.txt').unlink(missing_ok=True)
+          for part in pathlib.Path('.').glob('package_lock.b64.*'):
+              part.unlink(missing_ok=True)
+          pathlib.Path('.github/workflows/add-package-lock.yml').unlink(missing_ok=True)
+          PY
+      - name: Commit package lock
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git commit -m "Add package lock"
+          git push
